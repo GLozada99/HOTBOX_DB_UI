@@ -5,8 +5,11 @@ import threading
 import concurrent.futures
 from datetime import datetime
 
+from decouple import config
 from labjack import ljm
 
+from db.client import MongoDBClient
+from db.config import get_config
 from queue import Queue
 from power_sensor import power
 from control import get_error, get_temp
@@ -56,7 +59,8 @@ output_addresses = [1000]  # [DAC0]
 output_data_types = [ljm.constants.FLOAT32 for _ in output_addresses]
 
 # initializing variables
-error = get_error(29)
+config_data = get_config()
+error = get_error(29, config_data['SETO_POINTO'])
 previous_error = 0
 output = 0
 run_time = 0
@@ -80,11 +84,14 @@ t = threading.Thread(target=power_get)
 t.daemon = True
 t.start()
 
-# power sensor initializaction
+# power sensor initialization
 power_input = 0
 
+client_data = MongoDBClient(config('MONGO_USERNAME'), config('MONGO_PASSWORD'),
+                            config('MONGO_DBNAME'), 'measurements')
+
 # the loop where all the control is executed
-while run_time < 5400:
+while run_time < config_data['TIME']:
 
     # reading the senors input for the hot side
     results_hot = ljm.eReadAddresses(handle, hot_total_addresses,
@@ -110,7 +117,7 @@ while run_time < 5400:
     heat_flux_2 = heatflux_21681_queue.avg()
 
     # gets the error
-    error = get_error(temp_average_hot)
+    error = get_error(temp_average_hot, config_data['SETO_POINTO'])
 
     # send the average of the data values to controller code
     # the control start runing afeter 45 degrees celcius to make the heatig
@@ -168,8 +175,9 @@ while run_time < 5400:
     data = results_hot[2:] + results_cold
     time_date = datetime.fromtimestamp(time.time())
 
-    write_data(time_date, data, heatflux_21680,heatflux_21681, power_input,
-               condutivity, file)
+    with client_data:
+        write_data(time_date, data, heatflux_21680,heatflux_21681, power_input,
+                   condutivity, file, client_data)
 
     run_time  +=1
     # Repeat every 1 second, in hardware delay

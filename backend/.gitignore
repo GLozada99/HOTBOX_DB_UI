@@ -135,3 +135,4 @@ mediafiles
 pics
 st
 .redis
+.mongo
