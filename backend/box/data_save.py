@@ -4,6 +4,8 @@ from datetime import datetime
 
 from db.functions import persist_data_db
 
+from db.client import MongoDBClient
+
 headers = ('temp_1', 'temp_2', 'temp_3', 'temp_4', 'temp_5', 'temp_6',
          'temp_7', 'space', 'temp_8', 'temp_9', 'temp_10', 'temp_11',
          'temp_12',"Heat_flux_1", "Heat_flux_2","Power_input","conductivity", "tiempo")
@@ -30,7 +32,8 @@ def init_file(directory: str):
     create_file(file)
     return file
 
-def write_data(time_date, data, Heat_flux_1,Heat_flux_2, power,con,file):
+def write_data(time_date, data, Heat_flux_1,Heat_flux_2, power,con,file,
+               client: MongoDBClient):
     dict_data ={}
     dict_data['tiempo'] = time_date.strftime("%Y-%m-%d %H:%M:%S")
     dict_data['space'] = " "
@@ -42,4 +45,4 @@ def write_data(time_date, data, Heat_flux_1,Heat_flux_2, power,con,file):
         dict_data[f"temp_{i}"] = dat
 
     persist_data(dict_data, file)
-    persist_data_db(dict_data)
+    client.persist_data_db(dict_data)

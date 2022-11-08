@@ -7,6 +7,7 @@ from datetime import datetime
 
 from labjack import ljm
 
+from db.client import MongoDBClient
 from queue import Queue
 from power_sensor import power
 from control import get_error, get_temp
@@ -82,7 +83,7 @@ t.start()
 
 # power sensor initializaction
 power_input = 0
-
+client = MongoDBClient()
 # the loop where all the control is executed
 while run_time < 5400:
 
@@ -168,8 +169,9 @@ while run_time < 5400:
     data = results_hot[2:] + results_cold
     time_date = datetime.fromtimestamp(time.time())
 
-    write_data(time_date, data, heatflux_21680,heatflux_21681, power_input,
-               condutivity, file)
+    with client:
+        write_data(time_date, data, heatflux_21680,heatflux_21681, power_input,
+                   condutivity, file, client)
 
     run_time  +=1
     # Repeat every 1 second, in hardware delay
