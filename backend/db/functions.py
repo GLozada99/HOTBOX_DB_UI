@@ -1,3 +1,6 @@
+import time
+from typing import Iterable, Mapping
+
 from pymongo import MongoClient
 from decouple import config
 
@@ -8,6 +11,14 @@ def persist_data_db(data: dict):
     dbname = get_database()
     collection = dbname[COLLECTION_NAME]
     collection.insert_one(data)
+
+
+def get_data_db(quantity: int) -> Iterable[Mapping]:
+    dbname = get_database()
+    collection = dbname[COLLECTION_NAME]
+    data = collection.find().sort("_id", -1).limit(quantity)
+
+    return data
 
 
 def get_database():
@@ -23,3 +34,17 @@ def get_database():
     client = MongoClient(CONNECTION_STRING)
 
     return client[DB_NAME]
+
+#
+# def main():
+#     data = ({'bla': 1212, 'blabla': time.time()} for _ in range(5))
+#
+#     for d in data:
+#         persist_data_db(d)
+#
+#     for a in get_data_db(200):
+#         print(a)
+#
+#
+# if __name__ == '__main__':
+#     main()
