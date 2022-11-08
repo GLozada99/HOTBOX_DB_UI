@@ -1,4 +1,3 @@
-SETO_POINTO = 70 + 1.5
 UTERMS_1 = 0.999
 UTERMS_2 = 9.181e-47
 YTERMS = 4.234e-45
@@ -9,15 +8,11 @@ def get_temp(error: float, previous_error: float, previous_output: float) -> flo
     yterms = (YTERMS* (previous_output))
 
     output = clamp(uterms+yterms)
-    return output 
+    return output
 
-def get_error(input_: float) -> float:
+def get_error(input_: float, SETO_POINTO: float) -> float:
+    SETO_POINTO += 1.5
     return SETO_POINTO - input_
-    
+
 def clamp(value: float, min_: float = 0, max_: float = 5) -> float:
     return max(min_, min(value, max_))
-
-
-
-
-    
