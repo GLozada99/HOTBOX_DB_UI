@@ -1,12 +1,15 @@
 import time
 
+from decouple import config
+
 from db.client import MongoDBClient
 
 
 def main():
     data = ({'bla': 1212, 'blabla': time.time()} for _ in range(5))
 
-    client = MongoDBClient()
+    client = MongoDBClient(config('MONGO_USERNAME'), config('MONGO_PASSWORD'),
+        config('MONGO_DBNAME'), 'test')
     with client:
         for d in data:
             client.persist_data_db(d)

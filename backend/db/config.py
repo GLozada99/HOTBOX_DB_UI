@@ -8,7 +8,7 @@ from db.client import MongoDBClient
 def get_config() -> Mapping:
     client_config = MongoDBClient(
         config('MONGO_USERNAME'), config('MONGO_PASSWORD'),
-        config('MONGO_DB_NAME'), 'config',
+        config('MONGO_DBNAME'), 'config',
     )
     with client_config:
         if config_data := list(client_config.get_data_db(1)):
@@ -24,7 +24,7 @@ def get_config() -> Mapping:
 def set_config(seto_pointo: float, time: int) -> Mapping:
     client_config = MongoDBClient(
         config('MONGO_USERNAME'), config('MONGO_PASSWORD'),
-        config('MONGO_DB_NAME'), 'config',
+        config('MONGO_DBNAME'), 'config',
     )
     with client_config:
         data = {
