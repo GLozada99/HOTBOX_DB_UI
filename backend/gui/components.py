@@ -1,6 +1,11 @@
+import datetime
 import re
 
+import matplotlib
+import numpy as np
 from decouple import config
+from matplotlib import pyplot as plt
+from matplotlib.pyplot import axes
 from nicegui import ui
 from nicegui.elements.aggrid import AgGrid
 
@@ -95,7 +100,6 @@ def flux_table_component():
     )
 
     def set_table_rows(grid: AgGrid, rows: list[dict]):
-        print(rows)
         if grid.options["rowData"] != rows:
             grid.options["rowData"] = rows
             grid.update()
@@ -190,9 +194,125 @@ def temperature_table_component():
     )
 
     def set_table_rows(grid: AgGrid, rows: list[dict]):
-        print(rows)
         if grid.options["rowData"] != rows:
             grid.options["rowData"] = rows
             grid.update()
 
     ui.timer(REFRESH_TIME, lambda: set_table_rows(grid, get_rows(client, 8)))
+
+
+def flux_graph_component():
+    line_plot = ui.line_plot(
+        n=2, limit=50, figsize=(5, 6), update_every=5
+    ).with_legend(["Heat Flux 1", "Heat Flux 2"], loc="upper center", ncol=2)
+    count = 0
+    def update_line_plot(rows: list[dict]) -> None:
+        nonlocal count
+        for row in rows:
+            x = count
+            count += 1
+            y1 = row["heat_flux_1"]
+            y2 = row["heat_flux_2"]
+            line_plot.push([x], [[y1], [y2]])
+
+    def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
+        with client:
+            return [
+                {
+                    "time": entry["tiempo"],
+                    "heat_flux_1": entry["Heat_flux_1"],
+                    "heat_flux_2": entry["Heat_flux_2"],
+                }
+                for entry in client.get_data_db(quantity)
+            ]
+
+    client = MongoDBClient(
+        config("MONGO_USERNAME"),
+        config("MONGO_PASSWORD"),
+        config("MONGO_DBNAME"),
+        "measurements",
+    )
+    line_updates = ui.timer(
+        1, lambda: update_line_plot(get_rows(client, 1)), active=True
+    )
+
+
+def temperature_graph_component():
+    line_plot = ui.line_plot(
+        n=2, limit=50, figsize=(5, 6), update_every=5
+    ).with_legend(["Hot Side Avg", "Cold Side Avg"], loc="upper center", ncol=2)
+
+    count = 0
+    def update_line_plot(rows: list[dict]) -> None:
+        nonlocal count
+        for row in rows:
+            x = count
+            count += 1
+            y1 = sum(row["hot"]) / len(row["hot"])
+            y2 = sum(row["cold"]) / len(row["cold"])
+            line_plot.push([x], [[y1], [y2]])
+
+    def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
+        with client:
+            return [
+                {
+                    "hot": [
+                        entry["temp_1"],
+                        entry["temp_2"],
+                        entry["temp_3"],
+                        entry["temp_4"],
+                        entry["temp_5"],
+                        entry["temp_6"],
+                        entry["temp_7"],
+                        entry["temp_8"],
+                    ],
+                    "cold": [
+                        entry["temp_9"],
+                        entry["temp_10"],
+                    ],
+                }
+                for entry in client.get_data_db(quantity)
+            ]
+
+    client = MongoDBClient(
+        config("MONGO_USERNAME"),
+        config("MONGO_PASSWORD"),
+        config("MONGO_DBNAME"),
+        "measurements",
+    )
+    line_updates = ui.timer(
+        1, lambda: update_line_plot(get_rows(client, 1)), active=True
+    )
+
+
+def conductivity_graph_component():
+    line_plot = ui.line_plot(
+        n=1, limit=50, figsize=(5, 6), update_every=5
+    ).with_legend(["Conductivity"], loc="upper center", ncol=1)
+    count = 0
+    def update_line_plot(rows: list[dict]) -> None:
+        nonlocal count
+        for row in rows:
+            x = count
+            count += 1
+            y1 = row["conductivity"]
+            line_plot.push([x], [[y1]])
+
+    def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
+        with client:
+            return [
+                {
+                    "conductivity": entry["conductivity"],
+                }
+                for entry in client.get_data_db(quantity)
+            ]
+
+    client = MongoDBClient(
+        config("MONGO_USERNAME"),
+        config("MONGO_PASSWORD"),
+        config("MONGO_DBNAME"),
+        "measurements",
+    )
+    line_updates = ui.timer(
+        1, lambda: update_line_plot(get_rows(client, 1)), active=True
+    )
