@@ -14,8 +14,8 @@ def get_config() -> Mapping:
         if config_data := list(client_config.get_data_db(1)):
             return config_data[0]
         data = {
-            'SETO_POINTO': config('SETO_POINTO', float),
-            'TIME': config('TIME', int),
+            'SETO_POINTO': float(config('SETO_POINTO', "70.0")),
+            'TIME': int(config('TIME', "7200")),
         }
         client_config.persist_data_db(data)
         return data
