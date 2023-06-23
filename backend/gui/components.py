@@ -1,14 +1,10 @@
-import datetime
 import re
 
-import matplotlib
-import numpy as np
 from decouple import config
-from matplotlib import pyplot as plt
-from matplotlib.pyplot import axes
 from nicegui import ui
 from nicegui.elements.aggrid import AgGrid
 
+# from box.main import box_main
 from db.client import MongoDBClient
 from db.config import get_config
 from gui.callbacks import values_button_press_callback
@@ -34,6 +30,15 @@ def set_point_time_input_component():
         value=values["TIME"],
         validation={"Must be an integer": lambda v: bool(re.match(r"\d*", v))},
     ).props("clearable")
+
+
+def start_box_component():
+    values = get_config()
+    values_button = ui.button(
+        "Start",
+        on_click=lambda _: None,
+        # on_click=lambda _: box_main(),
+    )
 
 
 def flux_table_component():

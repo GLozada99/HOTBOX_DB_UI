@@ -5,12 +5,14 @@ from gui.components import (
     flux_table_component,
     temperature_table_component,
     flux_graph_component,
-    temperature_graph_component, conductivity_graph_component,
+    temperature_graph_component, conductivity_graph_component, start_box_component,
 )
 
 
 def main():
-    set_point_time_input_component()
+    with ui.row().classes("flex justify-center"):
+        set_point_time_input_component()
+        start_box_component()
     flux_table_component()
     temperature_table_component()
     with ui.row():
