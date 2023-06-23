@@ -2,8 +2,6 @@ import csv
 import time
 from datetime import datetime
 
-from db.functions import persist_data_db
-
 from db.client import MongoDBClient
 
 headers = ('temp_1', 'temp_2', 'temp_3', 'temp_4', 'temp_5', 'temp_6',
