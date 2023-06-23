@@ -12,6 +12,7 @@ pymongo = {extras = ["srv"], version = "^4.2.0"}
 python-decouple = "^3.6"
 nicegui = "^1.2.21"
 black = "^23.3.0"
+faker = "^18.11.1"
 
 
 [build-system]
