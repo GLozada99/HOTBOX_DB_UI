@@ -41,39 +41,46 @@ def start_box_component():
     )
 
 
+def isometric_view_component():
+    with ui.card().tight() as card:
+        ui.image(
+            f"https://cdn.discordapp.com/attachments/366674772408533013/1122650766566490152/Isometrica.jpeg"
+        )
+        with ui.card_section():
+            ui.label("Explode and Isometric Hotbox Design View")
+
+
 def flux_table_component():
     columns = [
         {
-            "name": "time",
-            "label": "Time",
             "field": "time",
-            "required": True,
-            "align": "left",
+            "headerName": "Time",
             "sortable": True,
+            "resizable": True,
         },
         {
-            "name": "heat_flux_1",
-            "label": "Heat Flux 1",
             "field": "heat_flux_1",
+            "headerName": "Heat Flux 1 (W/m2)",
             "sortable": True,
+            "resizable": True,
         },
         {
-            "name": "heat_flux_2",
-            "label": "Heat Flux 2",
-            "field": "heat_flux_2",
+            "field": "heat_flux_1",
+            "headerName": "Heat Flux 2 (W/m2)",
             "sortable": True,
+            "resizable": True,
         },
         {
-            "name": "power_input",
-            "label": "Power Input",
             "field": "power_input",
+            "headerName": "Power Input (W)",
             "sortable": True,
+            "resizable": True,
         },
         {
-            "name": "conductivity",
-            "label": "Conductivity",
             "field": "conductivity",
+            "headerName": "Conductivity (W/m-k)",
             "sortable": True,
+            "resizable": True,
         },
     ]
     client = MongoDBClient(
@@ -88,10 +95,10 @@ def flux_table_component():
             return [
                 {
                     "time": entry["tiempo"],
-                    "heat_flux_1": entry["Heat_flux_1"],
-                    "heat_flux_2": entry["Heat_flux_2"],
-                    "power_input": entry["Power_input"],
-                    "conductivity": entry["conductivity"],
+                    "heat_flux_1": "%.2f" % entry["Heat_flux_1"],
+                    "heat_flux_2": "%.2f" % entry["Heat_flux_2"],
+                    "power_input": "%.2f" % entry["Power_input"],
+                    "conductivity": "%.5f" % entry["conductivity"],
                 }
                 for entry in client.get_data_db(quantity)
             ]
@@ -115,54 +122,64 @@ def flux_table_component():
 def temperature_table_component():
     columns = [
         {
-            "name": "temp_1",
+            "headerName": "T1 (C°)",
             "label": "Temperature 1",
             "field": "temp_1",
+            "resizable": True,
         },
         {
-            "name": "temp_2",
+            "headerName": "T2 (C°)",
             "label": "Temperature 2",
             "field": "temp_2",
+            "resizable": True,
         },
         {
-            "name": "temp_3",
+            "headerName": "T3 (C°)",
             "label": "Temperature 3",
             "field": "temp_3",
+            "resizable": True,
         },
         {
-            "name": "temp_4",
+            "headerName": "T4 (C°)",
             "label": "Temperature 4",
             "field": "temp_4",
+            "resizable": True,
         },
         {
-            "name": "temp_5",
+            "headerName": "T5 (C°)",
             "label": "Temperature 5",
             "field": "temp_5",
+            "resizable": True,
         },
         {
-            "name": "temp_6",
+            "headerName": "T6 (C°)",
             "label": "Temperature 6",
             "field": "temp_6",
+            "resizable": True,
         },
         {
-            "name": "temp_7",
+            "headerName": "T7 (C°)",
             "label": "Temperature 7",
             "field": "temp_7",
+            "resizable": True,
         },
         {
-            "name": "temp_8",
+            "headerName": "T8 (C°)",
             "label": "Temperature 8",
             "field": "temp_8",
+            "resizable": True,
         },
         {
-            "name": "temp_9",
+            "headerName": "T9 (C°)",
             "label": "Temperature 9",
             "field": "temp_9",
+            "resizable": True,
         },
         {
-            "name": "temp_10",
+            "headerName": "T10 (C°)",
             "label": "Temperature 10",
             "field": "temp_10",
+            "resizable": True,
         },
     ]
     client = MongoDBClient(
@@ -176,16 +193,16 @@ def temperature_table_component():
         with client:
             return [
                 {
-                    "temp_1": entry["temp_1"],
-                    "temp_2": entry["temp_2"],
-                    "temp_3": entry["temp_3"],
-                    "temp_4": entry["temp_4"],
-                    "temp_5": entry["temp_5"],
-                    "temp_6": entry["temp_6"],
-                    "temp_7": entry["temp_7"],
-                    "temp_8": entry["temp_8"],
-                    "temp_9": entry["temp_9"],
-                    "temp_10": entry["temp_10"],
+                    "temp_1": "%.2f" % entry["temp_1"],
+                    "temp_2": "%.2f" % entry["temp_2"],
+                    "temp_3": "%.2f" % entry["temp_3"],
+                    "temp_4": "%.2f" % entry["temp_4"],
+                    "temp_5": "%.2f" % entry["temp_5"],
+                    "temp_6": "%.2f" % entry["temp_6"],
+                    "temp_7": "%.2f" % entry["temp_7"],
+                    "temp_8": "%.2f" % entry["temp_8"],
+                    "temp_9": "%.2f" % entry["temp_9"],
+                    "temp_10": "%.2f" % entry["temp_10"],
                 }
                 for entry in client.get_data_db(quantity)
             ]
@@ -208,9 +225,10 @@ def temperature_table_component():
 
 def flux_graph_component():
     line_plot = ui.line_plot(
-        n=2, limit=50, figsize=(5, 6), update_every=5
+        n=2, limit=7200, figsize=(14, 7), update_every=1
     ).with_legend(["Heat Flux 1", "Heat Flux 2"], loc="upper center", ncol=2)
     count = 0
+
     def update_line_plot(rows: list[dict]) -> None:
         nonlocal count
         for row in rows:
@@ -219,6 +237,8 @@ def flux_graph_component():
             y1 = row["heat_flux_1"]
             y2 = row["heat_flux_2"]
             line_plot.push([x], [[y1], [y2]])
+            line_plot.fig.gca().set_ylim(150, 300)
+            line_plot._convert_to_html()
 
     def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
         with client:
@@ -244,10 +264,11 @@ def flux_graph_component():
 
 def temperature_graph_component():
     line_plot = ui.line_plot(
-        n=2, limit=50, figsize=(5, 6), update_every=5
+        n=2, limit=7200, figsize=(14, 7), update_every=1
     ).with_legend(["Hot Side Avg", "Cold Side Avg"], loc="upper center", ncol=2)
 
     count = 0
+
     def update_line_plot(rows: list[dict]) -> None:
         nonlocal count
         for row in rows:
@@ -256,6 +277,8 @@ def temperature_graph_component():
             y1 = sum(row["hot"]) / len(row["hot"])
             y2 = sum(row["cold"]) / len(row["cold"])
             line_plot.push([x], [[y1], [y2]])
+            line_plot.fig.gca().set_ylim(0, 85)
+            line_plot._convert_to_html()
 
     def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
         with client:
@@ -292,9 +315,10 @@ def temperature_graph_component():
 
 def conductivity_graph_component():
     line_plot = ui.line_plot(
-        n=1, limit=50, figsize=(5, 6), update_every=5
+        n=1, limit=7200, figsize=(14, 7), update_every=1
     ).with_legend(["Conductivity"], loc="upper center", ncol=1)
     count = 0
+
     def update_line_plot(rows: list[dict]) -> None:
         nonlocal count
         for row in rows:
@@ -302,6 +326,8 @@ def conductivity_graph_component():
             count += 1
             y1 = row["conductivity"]
             line_plot.push([x], [[y1]])
+            line_plot.fig.gca().set_ylim(0, 1)
+            line_plot._convert_to_html()
 
     def get_rows(client: MongoDBClient, quantity: int) -> list[dict]:
         with client:
