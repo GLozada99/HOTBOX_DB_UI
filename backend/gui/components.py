@@ -7,7 +7,7 @@ from nicegui.elements.aggrid import AgGrid
 # from box.main import box_main
 from db.client import MongoDBClient
 from db.config import get_config
-from gui.callbacks import values_button_press_callback
+from gui.callbacks import values_button_press_callback, save_graph_callback
 
 REFRESH_TIME = 5
 
@@ -224,8 +224,13 @@ def temperature_table_component():
 
 
 def flux_graph_component():
+    # save_button = ui.button(
+    #     "Save Graph",
+    #     on_click=lambda _: save_graph_callback(line_plot, "Flux Graph"),
+    # )
+
     line_plot = ui.line_plot(
-        n=2, limit=7200, figsize=(14, 7), update_every=1
+        n=2, limit=7200, figsize=(10, 5), update_every=1
     ).with_legend(["Heat Flux 1", "Heat Flux 2"], loc="upper center", ncol=2)
     count = 0
 
@@ -264,8 +269,8 @@ def flux_graph_component():
 
 def temperature_graph_component():
     line_plot = ui.line_plot(
-        n=2, limit=7200, figsize=(14, 7), update_every=1
-    ).with_legend(["Hot Side Avg", "Cold Side Avg"], loc="upper center", ncol=2)
+        n=2, limit=7200, figsize=(10, 5), update_every=1
+    ).with_legend(["Cold Side Avg", "Hot Side Avg"], loc="upper center", ncol=2)
 
     count = 0
 
@@ -274,8 +279,8 @@ def temperature_graph_component():
         for row in rows:
             x = count
             count += 1
-            y1 = sum(row["hot"]) / len(row["hot"])
-            y2 = sum(row["cold"]) / len(row["cold"])
+            y1 = sum(row["cold"]) / len(row["cold"])
+            y2 = sum(row["hot"]) / len(row["hot"])
             line_plot.push([x], [[y1], [y2]])
             line_plot.fig.gca().set_ylim(0, 85)
             line_plot._convert_to_html()
@@ -315,7 +320,7 @@ def temperature_graph_component():
 
 def conductivity_graph_component():
     line_plot = ui.line_plot(
-        n=1, limit=7200, figsize=(14, 7), update_every=1
+        n=1, limit=7200, figsize=(10, 5), update_every=1
     ).with_legend(["Conductivity"], loc="upper center", ncol=1)
     count = 0
 
