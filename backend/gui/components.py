@@ -224,14 +224,15 @@ def temperature_table_component():
 
 
 def flux_graph_component():
-    # save_button = ui.button(
-    #     "Save Graph",
-    #     on_click=lambda _: save_graph_callback(line_plot, "Flux Graph"),
-    # )
 
     line_plot = ui.line_plot(
         n=2, limit=7200, figsize=(10, 5), update_every=1
-    ).with_legend(["Heat Flux 1", "Heat Flux 2"], loc="upper center", ncol=2)
+    ).with_legend(["HF 1", "HF 2"], loc="upper center", ncol=2)
+    line_plot.fig.suptitle("Heat Flux Graph")
+    save_button = ui.button(
+        "Save Graph",
+        on_click=lambda _: save_graph_callback(line_plot, "Heat Flux Graph"),
+    )
     count = 0
 
     def update_line_plot(rows: list[dict]) -> None:
@@ -271,7 +272,11 @@ def temperature_graph_component():
     line_plot = ui.line_plot(
         n=2, limit=7200, figsize=(10, 5), update_every=1
     ).with_legend(["Cold Side Avg", "Hot Side Avg"], loc="upper center", ncol=2)
-
+    line_plot.fig.suptitle("Temperature Graph")
+    save_button = ui.button(
+        "Save Graph",
+        on_click=lambda _: save_graph_callback(line_plot, "Temperature Graph"),
+    )
     count = 0
 
     def update_line_plot(rows: list[dict]) -> None:
@@ -322,6 +327,11 @@ def conductivity_graph_component():
     line_plot = ui.line_plot(
         n=1, limit=7200, figsize=(10, 5), update_every=1
     ).with_legend(["Conductivity"], loc="upper center", ncol=1)
+    line_plot.fig.suptitle("Conductivity Graph")
+    save_button = ui.button(
+        "Save Graph",
+        on_click=lambda _: save_graph_callback(line_plot, "Conductivity Graph"),
+    )
     count = 0
 
     def update_line_plot(rows: list[dict]) -> None:
