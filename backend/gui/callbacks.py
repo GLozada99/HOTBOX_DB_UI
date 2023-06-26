@@ -1,5 +1,8 @@
+import datetime
+
 from nicegui import ui
 from nicegui.elements.input import Input
+from nicegui.elements.line_plot import LinePlot
 
 from db.config import set_config
 
@@ -27,3 +30,9 @@ def values_button_press_callback(set_point_input: Input, time_input: Input):
         return
 
     set_config(set_point, time)
+
+
+def save_graph_callback(line_plot: LinePlot, name: str):
+    now = str(datetime.datetime.now())
+    line_plot.fig.savefig(f"./images/{name} {now}.jpg", format='jpg')
+    ui.notify(f"{name} was saved successfully", type="positive")
