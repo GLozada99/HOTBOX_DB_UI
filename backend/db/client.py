@@ -4,16 +4,17 @@ from pymongo import MongoClient
 
 
 class MongoDBClient:
-
-    def __init__(self, username: str, password: str, db_name: str,
-                 collection_name: str):
+    def __init__(
+        self, username: str, password: str, db_name: str, collection_name: str
+    ):
         self.db_name = db_name
         self.collection_name = collection_name
 
         self.connection_string = (
             "mongodb://"
             f"{username}:{password}@localhost:27017"
-            f"/{db_name}?authSource=admin&retryWrites=true&w=majority")
+            f"/{db_name}?authSource=admin&retryWrites=true&w=majority"
+        )
 
     def persist_data_db(self, data: dict):
         collection = self.connection[self.collection_name]
